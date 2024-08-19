@@ -15,6 +15,7 @@
 // Author: Maciej Bednarczyk (macbednarczyk@gmail.com)
 
 #include <numeric>
+#include <chrono>
 
 #include "ethercat_generic_plugins/generic_ec_cia402_drive.hpp"
 
@@ -85,6 +86,17 @@ void EcCiA402Drive::processData(size_t index, uint8_t * domain_address)
   // Special case: StatusWord
   if (pdo_channels_info_[index].index == CiA402D_TPDO_STATUSWORD) {
     status_word_ = pdo_channels_info_[index].last_value;
+  }
+
+  // Special case: ErrorCode
+  static std::chrono::time_point<std::chrono::system_clock> start_t = std::chrono::system_clock::now();
+  if (pdo_channels_info_[index].index == CiA402D_TPDO_ERRORCODE) {
+    error_code_ = pdo_channels_info_[index].last_value;
+    if(error_code_ != last_error_code_ && error_code_ != 0) {
+      std::chrono::duration<double> elapsed_seconds = std::chrono::system_clock::now() - start_t;
+      std::cout << "[" << std::dec << elapsed_seconds.count() << "]\t" << "ERROR CODE: " << std::hex << error_code_ << std::endl;
+    }
+    last_error_code_ = error_code_;
   }
 
 

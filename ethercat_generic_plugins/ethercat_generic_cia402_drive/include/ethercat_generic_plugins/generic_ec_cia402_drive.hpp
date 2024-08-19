@@ -54,6 +54,8 @@ protected:
   uint32_t counter_ = 0;
   uint16_t last_status_word_ = -1;
   uint16_t status_word_ = 0;
+  uint16_t last_error_code_ = -1;
+  uint16_t error_code_ = 0;
   uint16_t control_word_ = 0;
   DeviceState last_state_ = STATE_START;
   DeviceState state_ = STATE_START;
